@@ -26,7 +26,7 @@ void rowInterchange(matrix<double> &m, int row1, int row2) {
 }
 
 // adds "factor" multiple of row 1 to row 2
-void addMultiple(matrix<double> &m, int row1, double factor, int row2) {
+void addMultiple(matrix<double> &m, int row1, int row2, double factor) {
   for (unsigned i = 0; i < m.size2(); i++) {
     m.insert_element(row2, i, (m(row1, i) * factor) + m(row2, i));
   }
@@ -68,6 +68,16 @@ int getRowLarEnInCol(matrix<double> &m, int col) {
   return row;
 }
 
+// creates zeros in all entries under pivot in given column
+void zeroCol(matrix<double> &m, int row, int col) {
+  double pivot = m(row, col);
+  for (unsigned i = row + 1; i < m.size1(); i++) {
+    if (m(i, col) != 0) {
+      addMultiple(m, row, i, -(m(i, col) / pivot));
+    }
+  }
+}
+
 void printMatrix(const matrix<double> &m) {
   std::cout << std::endl;
   for (unsigned i = 0; i < m.size1(); i++) {
@@ -92,7 +102,7 @@ int main(int argc, const char *argv[]) {
 
   std::cout << "Now enter numbers, one at a time, in row-major order: "
             << std::endl;
-  double input = 0.0;
+  double input(0.0);
 
   for (unsigned i = 0; i < m.size1(); i++) {
     for (unsigned j = 0; j < m.size2(); j++) {
@@ -107,22 +117,28 @@ int main(int argc, const char *argv[]) {
 
   printMatrix(m);
 
-  // std::cout << std::endl << "Now to row-reduce..." << std::endl;
+  std::cout << std::endl << "Now to row-reduce..." << std::endl;
 
-  // bool found = false;
-  // int mLNoZ = getLeftMostCol(m, found, 0);
+  for (unsigned i = 0; i < m.size1(); i++) {
+    bool found(false);
+    int mLNoZ = getLeftMostCol(m, found, i);
+    int pivot = getRowLarEnInCol(m, mLNoZ);
 
-  int row = 0;
-  std::cout << "What row would you like to scale: ";
-  std::cin >> row;
-  std::cout << "By what factor?" << std::endl;
-  double factor = 0;
-  std::cin >> factor;
-  std::cout << std::endl;
+    if (pivot != i) {
+      rowInterchange(m, i, pivot);
+    }
 
-  scaleRow(m, row, factor);
+    zeroCol(m, i, mLNoZ);
 
-  printMatrix(m);
+    printMatrix(m);
+
+  }
+
+
+
+
+
+  
 
   return 0;
 }
