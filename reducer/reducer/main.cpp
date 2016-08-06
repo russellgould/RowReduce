@@ -168,28 +168,20 @@ int main(int argc, const char *argv[]) {
   for (unsigned i = 0; i < m.size1() && i < m.size2(); i++) {
     rowInterchange(m, curPivRow, i);
     curPivRow = i;
-    std::cout << "after swapping pivot" << std::endl;
-    printMatrix(m);
 
     // zero out entries in column underneath pivot
     zeroCol(m, curPivRow, curPivCol);
-    std::cout << "after zeroing out cols" << std::endl;
-    printMatrix(m);
 
     // scale entire row so that entry at pivot position is 1
     if (m(curPivRow, curPivCol) != 1 && m(curPivRow, curPivCol) != 0) {
       scaleRow(m, i, (1 / m(curPivRow, curPivCol)));
     }
-    std::cout << "after scaling the row" << std::endl;
-    printMatrix(m);
 
     // now that matrix is in echelon form, zero out nonzero entries above pivots
     // to create matrix in reduced echelon form
     if (i > 0) {
       zeroColUp(m, curPivRow, curPivCol);
     }
-    std::cout << "after zeroing out upwards" << std::endl;
-    printMatrix(m);
 
     prevPivCol = curPivCol;
     prevPivRow = curPivRow;
