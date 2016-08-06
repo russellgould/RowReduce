@@ -42,12 +42,12 @@ void scaleRow(matrix<double> &m, int row, double factor) {
 // other operations
 //
 // finds left-most nonzero column in matrix
-int getPivCol(const matrix<double> &m, bool &found, int col) {
-  if (col == m.size1()) { // right-most col is 0's
+int getPivCol(const matrix<double> &m, bool &found, int startRow, int col) {
+  if (col == m.size2()) { // right-most col is 0's
     col -= 1;
     found = true;
   } else {
-    for (unsigned i = 0; i < m.size1(); i++) {
+    for (unsigned i = startRow; i < m.size1(); i++) {
       if (m(i, col) != 0) {
         found = true;
       }
@@ -55,7 +55,7 @@ int getPivCol(const matrix<double> &m, bool &found, int col) {
   }
 
   if (!found) { // some col is 0's, keep looking
-    col = getPivCol(m, found, col + 1);
+    col = getPivCol(m, found, startRow, col + 1);
   }
 
   return col;
@@ -66,10 +66,15 @@ int getPivCol(const matrix<double> &m, bool &found, int col) {
 int getPivRow(matrix<double> &m, int startRow, int col) {
   int row(0);
   for (unsigned i = startRow; i < m.size1(); i++) {
-    if (abs(m(i, col)) >= row) {
+    if (abs(m(i, col)) > row) {
       row = i;
     }
   }
+
+  if (row == 0) { // all remaining entries in col are 0, return current row
+    row = startRow;
+  }
+
   return row;
 }
 
@@ -156,22 +161,15 @@ int main(int argc, const char *argv[]) {
   size_t prevPivRow(0), prevPivCol(0), curPivRow(0), curPivCol(0);
 
   // find first pivot point to start the iterations correctly
-  curPivCol = getPivCol(m, found, 0);
+  curPivCol = getPivCol(m, found, 0, 0);
   curPivRow = getPivRow(m, 0, curPivCol);
-
-  if (curPivRow != 0) {
-    rowInterchange(m, curPivRow, 0);
-    curPivRow = 0;
-  }
 
   // algorithm to reduce matrix to an echelon form
   for (unsigned i = 0; i < m.size1() && i < m.size2(); i++) {
-    if (i > 0) {
-      if (curPivRow != prevPivRow + 1) {
-        rowInterchange(m, curPivRow, prevPivRow + 1);
-        curPivRow = prevPivRow + 1;
-      }
-    }
+    rowInterchange(m, curPivRow, i);
+    curPivRow = i;
+    std::cout << "after swapping pivot" << std::endl;
+    printMatrix(m);
 
     // zero out entries in column underneath pivot
     zeroCol(m, curPivRow, curPivCol);
@@ -187,17 +185,18 @@ int main(int argc, const char *argv[]) {
 
     // now that matrix is in echelon form, zero out nonzero entries above pivots
     // to create matrix in reduced echelon form
-    if (curPivRow > 0) {
+    if (i > 0) {
       zeroColUp(m, curPivRow, curPivCol);
     }
+    std::cout << "after zeroing out upwards" << std::endl;
+    printMatrix(m);
 
     prevPivCol = curPivCol;
     prevPivRow = curPivRow;
 
-    curPivCol = getPivCol(m, found, prevPivCol + 1);
-    curPivRow = getPivRow(m, prevPivRow + 1, curPivCol);
-
-    printMatrix(m);
+    found = false;
+    curPivCol = getPivCol(m, found, i + 1, prevPivCol + 1);
+    curPivRow = getPivRow(m, i + 1, curPivCol);
   }
 
   std::cout << std::endl;
