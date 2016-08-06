@@ -25,7 +25,7 @@ void rowInterchange(matrix<double> &m, int row1, int row2) {
   oldRow = nullptr;
 }
 
-// adds "factor" multiple of row 1 to row 2
+// adds "factor" multiple of row1 to row2
 void addMultiple(matrix<double> &m, int row1, int row2, double factor) {
   for (unsigned i = 0; i < m.size2(); i++) {
     m.insert_element(row2, i, (m(row1, i) * factor) + m(row2, i));
@@ -41,7 +41,7 @@ void scaleRow(matrix<double> &m, int row, double factor) {
 
 // other operations
 //
-// finds left-most nonzero column in matrix
+// finds column to be used as pivot column
 int getPivCol(const matrix<double> &m, bool &found, int startRow, int col) {
   if (col == m.size2()) { // right-most col is 0's
     col -= 1;
@@ -164,7 +164,7 @@ int main(int argc, const char *argv[]) {
   curPivCol = getPivCol(m, found, 0, 0);
   curPivRow = getPivRow(m, 0, curPivCol);
 
-  // algorithm to reduce matrix to an echelon form
+  // loop to fully reduce matrix to reduced echelon form
   for (unsigned i = 0; i < m.size1() && i < m.size2(); i++) {
     rowInterchange(m, curPivRow, i);
     curPivRow = i;
@@ -185,13 +185,14 @@ int main(int argc, const char *argv[]) {
     prevPivCol = curPivCol;
     prevPivRow = curPivRow;
 
+  // get next pivot position
     found = false;
     curPivCol = getPivCol(m, found, i + 1, prevPivCol + 1);
     curPivRow = getPivRow(m, i + 1, curPivCol);
   }
 
   std::cout << std::endl;
-  std::cout << "The reduced form is: " << std::endl;
+  std::cout << "Your reduced matrix is: " << std::endl;
   printMatrix(m);
 
   return 0;
