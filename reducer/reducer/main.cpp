@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 
 using namespace boost::numeric::ublas;
 
@@ -124,7 +125,6 @@ void printMatrix(const matrix<double> &m) {
     }
     std::cout << std::endl;
   }
-  std::cout << std::endl;
 }
 
 int main(int argc, const char *argv[]) {
@@ -148,13 +148,10 @@ int main(int argc, const char *argv[]) {
       m.insert_element(i, j, input);
     }
   }
+  std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-  std::cout << std::endl
-            << "The matrix you entered is: " << std::endl
-            << std::endl;
+  std::cout << std::endl << "The matrix you entered is: " << std::endl;
   printMatrix(m);
-
-  std::cout << std::endl << "Now to row-reduce..." << std::endl;
 
   // need to know previous pivot point in each iteration
   bool found(false);
@@ -185,7 +182,7 @@ int main(int argc, const char *argv[]) {
     prevPivCol = curPivCol;
     prevPivRow = curPivRow;
 
-  // get next pivot position
+    // get next pivot position
     found = false;
     curPivCol = getPivCol(m, found, i + 1, prevPivCol + 1);
     curPivRow = getPivRow(m, i + 1, curPivCol);
@@ -194,6 +191,10 @@ int main(int argc, const char *argv[]) {
   std::cout << std::endl;
   std::cout << "Your reduced matrix is: " << std::endl;
   printMatrix(m);
+  std::cout << std::endl;
+
+  std::cout << "Press ENTER or close the window to exit...";
+  std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
   return 0;
 }
