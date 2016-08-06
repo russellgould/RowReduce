@@ -169,7 +169,7 @@ int main(int argc, const char *argv[]) {
     rowInterchange(m, curPivRow, i);
     curPivRow = i;
 
-    // zero out entries in column underneath pivot
+    // zero out entries underneath pivot
     zeroCol(m, curPivRow, curPivCol);
 
     // scale entire row so that entry at pivot position is 1
@@ -177,8 +177,7 @@ int main(int argc, const char *argv[]) {
       scaleRow(m, i, (1 / m(curPivRow, curPivCol)));
     }
 
-    // now that matrix is in echelon form, zero out nonzero entries above pivots
-    // to create matrix in reduced echelon form
+    // zero out entries above pivot for reduced echelon form
     if (i > 0) {
       zeroColUp(m, curPivRow, curPivCol);
     }
