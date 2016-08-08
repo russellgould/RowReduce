@@ -153,7 +153,7 @@ int main(int argc, const char *argv[]) {
   std::cout << std::endl << "The matrix you entered is: " << std::endl;
   printMatrix(m);
 
-  // need to know previous pivot point in each iteration
+  // create variables to store current and previous pivots
   bool found(false);
   size_t prevPivRow(0), prevPivCol(0), curPivRow(0), curPivCol(0);
 
