@@ -65,9 +65,11 @@ int getPivCol(const matrix<double> &m, bool &found, int startRow, int col) {
 // gets value for row containing entry with largest absolute value in the passed
 // column
 int getPivRow(matrix<double> &m, int startRow, int col) {
+  double max(0);
   int row(0);
   for (unsigned i = startRow; i < m.size1(); i++) {
-    if (abs(m(i, col)) > row) {
+    if (abs(m(i, col)) > max) {
+      max = abs(m(i, col));
       row = i;
     }
   }
@@ -165,19 +167,27 @@ int main(int argc, const char *argv[]) {
   for (unsigned i = 0; i < m.size1() && i < m.size2(); i++) {
     rowInterchange(m, curPivRow, i);
     curPivRow = i;
+    std::cout << "after swap: " << std::endl;
+    printMatrix(m);
 
     // zero out entries underneath pivot
     zeroCol(m, curPivRow, curPivCol);
+    std::cout << "after zeroing down: " << std::endl;
+    printMatrix(m);
 
     // scale entire row so that entry at pivot position is 1
     if (m(curPivRow, curPivCol) != 1 && m(curPivRow, curPivCol) != 0) {
       scaleRow(m, i, (1 / m(curPivRow, curPivCol)));
     }
+    std::cout << "after scaling: " << std::endl;
+    printMatrix(m);
 
     // zero out entries above pivot for reduced echelon form
     if (i > 0) {
       zeroColUp(m, curPivRow, curPivCol);
     }
+    std::cout << "after zeroing up: " << std::endl;
+    printMatrix(m);
 
     prevPivCol = curPivCol;
     prevPivRow = curPivRow;
