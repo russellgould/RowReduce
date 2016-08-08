@@ -81,25 +81,6 @@ int getPivRow(matrix<double> &m, int startRow, int col) {
   return row;
 }
 
-// finds pivot entry in row
-int getPivEntry(matrix<double> &m, int row) {
-  int pivot(0), i(0);
-  bool found(false);
-  do {
-    if (m(row, i) != 0) {
-      pivot = i;
-      found = true;
-    }
-    i++;
-  } while (!found && i < m.size2());
-
-  if (!found && i == m.size2()) {
-    pivot = -1;
-  }
-
-  return pivot;
-}
-
 // creates zeros in all entries under pivot in given column
 void zeroCol(matrix<double> &m, int row, int col) {
   double pivot = m(row, col);
@@ -123,10 +104,11 @@ void printMatrix(const matrix<double> &m) {
   std::cout << std::endl;
   for (unsigned i = 0; i < m.size1(); i++) {
     for (unsigned j = 0; j < m.size2(); j++) {
-      if (m(i, j) == -0) {
-        std::cout << "[0] ";
+      double d(m(i, j));
+      if (d == -0) {
+        std::cout << "[" << std::setw(3) << std::setfill(' ') << 0 << "]";
       } else {
-        std::cout << "[" << m(i, j) << "] ";
+        std::cout << "[" << std::setw(3) << std::setfill(' ') << d << "]";
       }
     }
     std::cout << std::endl;
@@ -171,19 +153,27 @@ int main(int argc, const char *argv[]) {
   for (unsigned i = 0; i < m.size1() && i < m.size2(); i++) {
     rowInterchange(m, curPivRow, i);
     curPivRow = i;
+    std::cout << "swapping: " << std::endl;
+    printMatrix(m);
 
     // zero out entries underneath pivot
     zeroCol(m, curPivRow, curPivCol);
+    std::cout << "zeroing down: " << std::endl;
+    printMatrix(m);
 
     // scale entire row so that entry at pivot position is 1
     if (m(curPivRow, curPivCol) != 1 && m(curPivRow, curPivCol) != 0) {
       scaleRow(m, i, (1 / m(curPivRow, curPivCol)));
     }
+    std::cout << "scaling: " << std::endl;
+    printMatrix(m);
 
     // zero out entries above pivot for reduced echelon form
     if (i > 0) {
       zeroColUp(m, curPivRow, curPivCol);
     }
+    std::cout << "zeroing up: " << std::endl;
+    printMatrix(m);
 
     prevPivCol = curPivCol;
     prevPivRow = curPivRow;
