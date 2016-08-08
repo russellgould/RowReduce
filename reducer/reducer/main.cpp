@@ -123,7 +123,11 @@ void printMatrix(const matrix<double> &m) {
   std::cout << std::endl;
   for (unsigned i = 0; i < m.size1(); i++) {
     for (unsigned j = 0; j < m.size2(); j++) {
-      std::cout << "[" << m(i, j) << "] ";
+      if (m(i, j) == -0) {
+        std::cout << "[0] ";
+      } else {
+        std::cout << "[" << m(i, j) << "] ";
+      }
     }
     std::cout << std::endl;
   }
@@ -167,27 +171,19 @@ int main(int argc, const char *argv[]) {
   for (unsigned i = 0; i < m.size1() && i < m.size2(); i++) {
     rowInterchange(m, curPivRow, i);
     curPivRow = i;
-    std::cout << "after swap: " << std::endl;
-    printMatrix(m);
 
     // zero out entries underneath pivot
     zeroCol(m, curPivRow, curPivCol);
-    std::cout << "after zeroing down: " << std::endl;
-    printMatrix(m);
 
     // scale entire row so that entry at pivot position is 1
     if (m(curPivRow, curPivCol) != 1 && m(curPivRow, curPivCol) != 0) {
       scaleRow(m, i, (1 / m(curPivRow, curPivCol)));
     }
-    std::cout << "after scaling: " << std::endl;
-    printMatrix(m);
 
     // zero out entries above pivot for reduced echelon form
     if (i > 0) {
       zeroColUp(m, curPivRow, curPivCol);
     }
-    std::cout << "after zeroing up: " << std::endl;
-    printMatrix(m);
 
     prevPivCol = curPivCol;
     prevPivRow = curPivRow;
