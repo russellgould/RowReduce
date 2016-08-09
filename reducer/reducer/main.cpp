@@ -43,7 +43,7 @@ void scaleRow(matrix<double> &m, int row, double factor) {
 // other operations
 //
 // gets largest value in row to be used as scale factor
-double getScale(matrix<double> &m, int row) {
+double getScale(matrix<double> &m, int row, int col) {
   double max(0), check(0);
   for (unsigned i = 0; i < m.size2(); i++) {
     check = m(row, i);
@@ -52,7 +52,7 @@ double getScale(matrix<double> &m, int row) {
     }
   }
 
-  if (max == 0) {
+  if (max == m(row, col)) {
     max = 1;
   }
 
@@ -85,7 +85,7 @@ int getPivRow(matrix<double> &m, int startRow, int col) {
   double max(0), factor(0);
   int row(0);
   for (unsigned i = startRow; i < m.size1(); i++) {
-    factor = abs(m(i, col) / getScale(m, i));
+    factor = abs(m(i, col) / getScale(m, i, col));
     if (factor > max) {
       max = factor;
       row = i;
