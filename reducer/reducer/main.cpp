@@ -30,7 +30,7 @@ void rowInterchange(matrix<double> &m, int row1, int row2) {
 // adds "factor" multiple of row1 to row2
 void addMultiple(matrix<double> &m, int row1, int row2, double factor) {
   for (unsigned i = 0; i < m.size2(); i++) {
-m.insert_element(row2, i, (m(row1, i) * factor) + m(row2, i));
+    m.insert_element(row2, i, (m(row1, i) * factor) + m(row2, i));
   }
 }
 
@@ -65,8 +65,7 @@ int getPivCol(const matrix<double> &m, bool &found, int startRow, int col) {
   if (col == m.size2()) { // right-most col is 0's
     col -= 1;
     found = true;
-  }
-  else {
+  } else {
     for (unsigned i = startRow; i < m.size1(); i++) {
       if (m(i, col) != 0) {
         found = true;
@@ -145,15 +144,25 @@ void printMatrix(const matrix<double> &m) {
   int boxSize = getMaxEntryLen(m);
   std::cout << std::endl;
   for (unsigned i = 0; i < m.size1(); i++) {
+    std::cout << "[";
     for (unsigned j = 0; j < m.size2(); j++) {
       double d(m(i, j));
       if (d == -0) {
-        std::cout << "[" << std::setw(boxSize) << std::setfill(' ') << 0 << "]";
+        if (j == 0) {
+          std::cout << std::setw(boxSize) << std::setfill(' ') << 0;
+        } else {
+          std::cout << std::setw(boxSize + 1) << std::setfill(' ') << 0;
+        }
       } else {
-        std::cout << "[" << std::setw(boxSize) << std::setfill(' ') << d << "]";
+        if (j == 0) {
+          std::cout << std::setw(boxSize) << std::setfill(' ') << d;
+        }
+        else {
+          std::cout << std::setw(boxSize + 1) << std::setfill(' ') << d;
+        }
       }
     }
-    std::cout << std::endl;
+    std::cout << "]" << std::endl;
   }
 }
 
