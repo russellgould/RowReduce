@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <sstream>
 
 using namespace boost::numeric::ublas;
 
@@ -29,7 +30,7 @@ void rowInterchange(matrix<double> &m, int row1, int row2) {
 // adds "factor" multiple of row1 to row2
 void addMultiple(matrix<double> &m, int row1, int row2, double factor) {
   for (unsigned i = 0; i < m.size2(); i++) {
-    m.insert_element(row2, i, (m(row1, i) * factor) + m(row2, i));
+m.insert_element(row2, i, (m(row1, i) * factor) + m(row2, i));
   }
 }
 
@@ -64,7 +65,8 @@ int getPivCol(const matrix<double> &m, bool &found, int startRow, int col) {
   if (col == m.size2()) { // right-most col is 0's
     col -= 1;
     found = true;
-  } else {
+  }
+  else {
     for (unsigned i = startRow; i < m.size1(); i++) {
       if (m(i, col) != 0) {
         found = true;
@@ -118,15 +120,37 @@ void zeroColUp(matrix<double> &m, int row, int col) {
   }
 }
 
+int getDigitLen(double d) {
+  std::string result;
+  std::ostringstream conv;
+  conv << d;
+  result = conv.str();
+  return result.length();
+}
+
+int getMaxEntryLen(const matrix<double> &m) {
+  int max(1);
+  for (unsigned i = 0; i < m.size1(); i++) {
+    for (unsigned j = 0; j < m.size2(); j++) {
+      int check = getDigitLen(m(i, j));
+      if (check > max) {
+        max = check;
+      }
+    }
+  }
+  return max;
+}
+
 void printMatrix(const matrix<double> &m) {
+  int boxSize = getMaxEntryLen(m);
   std::cout << std::endl;
   for (unsigned i = 0; i < m.size1(); i++) {
     for (unsigned j = 0; j < m.size2(); j++) {
       double d(m(i, j));
       if (d == -0) {
-        std::cout << "[" << std::setw(3) << std::setfill(' ') << 0 << "]";
+        std::cout << "[" << std::setw(boxSize) << std::setfill(' ') << 0 << "]";
       } else {
-        std::cout << "[" << std::setw(3) << std::setfill(' ') << d << "]";
+        std::cout << "[" << std::setw(boxSize) << std::setfill(' ') << d << "]";
       }
     }
     std::cout << std::endl;
@@ -171,27 +195,19 @@ int main(int argc, const char *argv[]) {
   for (unsigned i = 0; i < m.size1() && i < m.size2(); i++) {
     rowInterchange(m, curPivRow, i);
     curPivRow = i;
-    std::cout << "swapping: " << std::endl;
-    printMatrix(m);
 
     // zero out entries underneath pivot
     zeroCol(m, curPivRow, curPivCol);
-    std::cout << "zeroing down: " << std::endl;
-    printMatrix(m);
 
     // scale entire row so that entry at pivot position is 1
     if (m(curPivRow, curPivCol) != 1 && m(curPivRow, curPivCol) != 0) {
       scaleRow(m, i, (1 / m(curPivRow, curPivCol)));
     }
-    std::cout << "scaling: " << std::endl;
-    printMatrix(m);
 
     // zero out entries above pivot for reduced echelon form
     if (i > 0) {
       zeroColUp(m, curPivRow, curPivCol);
     }
-    std::cout << "zeroing up: " << std::endl;
-    printMatrix(m);
 
     prevPivCol = curPivCol;
     prevPivRow = curPivRow;
