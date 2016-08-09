@@ -42,6 +42,23 @@ void scaleRow(matrix<double> &m, int row, double factor) {
 
 // other operations
 //
+// gets largest value in row to be used as scale factor
+double getScale(matrix<double> &m, int row) {
+  double max(0), check(0);
+  for (unsigned i = 0; i < m.size2(); i++) {
+    check = m(row, i);
+    if (check > max) {
+      max = check;
+    }
+  }
+
+  if (max == 0) {
+    max = 1;
+  }
+
+  return max;
+}
+
 // finds column to be used as pivot column
 int getPivCol(const matrix<double> &m, bool &found, int startRow, int col) {
   if (col == m.size2()) { // right-most col is 0's
@@ -65,11 +82,12 @@ int getPivCol(const matrix<double> &m, bool &found, int startRow, int col) {
 // gets value for row containing entry with largest absolute value in the passed
 // column
 int getPivRow(matrix<double> &m, int startRow, int col) {
-  double max(0);
+  double max(0), factor(0);
   int row(0);
   for (unsigned i = startRow; i < m.size1(); i++) {
-    if (abs(m(i, col)) > max) {
-      max = abs(m(i, col));
+    factor = abs(m(i, col) / getScale(m, i));
+    if (factor > max) {
+      max = factor;
       row = i;
     }
   }
